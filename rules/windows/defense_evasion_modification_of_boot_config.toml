@@ -1,8 +1,8 @@
 [metadata]
 creation_date = "2020/03/16"
-ecs_version = ["1.4.0"]
+ecs_version = ["1.6.0"]
 maturity = "production"
-updated_date = "2020/03/16"
+updated_date = "2020/08/03"
 
 [rule]
 author = ["Elastic"]
@@ -10,7 +10,8 @@ description = """
 Identifies use of bcdedit.exe to delete boot configuration data. This tactic is sometimes used as by malware or an
 attacker as a destructive technique.
 """
-index = ["winlogbeat-*"]
+from = "now-9m"
+index = ["winlogbeat-*", "logs-endpoint.events.*"]
 language = "kuery"
 license = "Elastic License"
 name = "Modification of Boot Configuration"
@@ -21,7 +22,10 @@ tags = ["Elastic", "Windows"]
 type = "query"
 
 query = '''
-event.action:"Process Create (rule: ProcessCreate)" and process.name:bcdedit.exe and process.args:(/set and (bootstatuspolicy and ignoreallfailures or no and recoveryenabled))
+event.category:process and event.type:(start or process_started) and
+  process.name:bcdedit.exe and
+  process.args:(/set and
+    (bootstatuspolicy and ignoreallfailures or no and recoveryenabled))
 '''
 
 

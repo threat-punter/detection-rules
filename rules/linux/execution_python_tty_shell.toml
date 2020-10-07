@@ -1,8 +1,8 @@
 [metadata]
 creation_date = "2020/04/15"
-ecs_version = ["1.4.0"]
+ecs_version = ["1.6.0"]
 maturity = "production"
-updated_date = "2020/04/15"
+updated_date = "2020/08/03"
 
 [rule]
 author = ["Elastic"]
@@ -10,7 +10,8 @@ description = """
 Identifies when a terminal (tty) is spawned via Python. Attackers may upgrade a simple reverse shell to a fully
 interactive tty after obtaining initial access to a host.
 """
-index = ["auditbeat-*"]
+from = "now-9m"
+index = ["auditbeat-*", "logs-endpoint.events.*"]
 language = "kuery"
 license = "Elastic License"
 name = "Interactive Terminal Spawned via Python"
@@ -21,7 +22,10 @@ tags = ["Elastic", "Linux"]
 type = "query"
 
 query = '''
-event.action:executed and process.name:python and process.args:("import pty; pty.spawn(\"/bin/sh\")" or "import pty; pty.spawn(\"/bin/dash\")" or "import pty; pty.spawn(\"/bin/bash\")")
+event.category:process and event.type:(start or process_started) and process.name:python and
+  process.args:("import pty; pty.spawn(\"/bin/sh\")" or
+                "import pty; pty.spawn(\"/bin/dash\")" or
+                "import pty; pty.spawn(\"/bin/bash\")")
 '''
 
 
@@ -29,7 +33,7 @@ event.action:executed and process.name:python and process.args:("import pty; pty
 framework = "MITRE ATT&CK"
 [[rule.threat.technique]]
 id = "T1059"
-name = "Command-Line Interface"
+name = "Command and Scripting Interpreter"
 reference = "https://attack.mitre.org/techniques/T1059/"
 
 

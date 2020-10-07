@@ -1,8 +1,8 @@
 [metadata]
 creation_date = "2020/04/23"
-ecs_version = ["1.4.0"]
+ecs_version = ["1.6.0"]
 maturity = "production"
-updated_date = "2020/04/23"
+updated_date = "2020/08/03"
 
 [rule]
 author = ["Elastic"]
@@ -18,7 +18,8 @@ false_positives = [
     suspicious.
     """,
 ]
-index = ["auditbeat-*"]
+from = "now-9m"
+index = ["auditbeat-*", "logs-endpoint.events.*"]
 language = "kuery"
 license = "Elastic License"
 name = "Connection to External Network via Telnet"
@@ -29,7 +30,9 @@ tags = ["Elastic", "Linux"]
 type = "query"
 
 query = '''
-event.action:("connected-to" or "network_flow") and process.name:telnet and not destination.ip:(127.0.0.0/8 or 10.0.0.0/8 or 172.16.0.0/12 or 192.168.0.0/16 or "FE80::/10" or "::1/128")
+event.category:network and event.type:(connection or start) and
+  process.name:telnet and
+  not destination.ip:(127.0.0.0/8 or 10.0.0.0/8 or 172.16.0.0/12 or 192.168.0.0/16 or "FE80::/10" or "::1/128")
 '''
 
 

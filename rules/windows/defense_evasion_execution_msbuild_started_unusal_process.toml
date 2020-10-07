@@ -1,8 +1,8 @@
 [metadata]
 creation_date = "2020/03/25"
-ecs_version = ["1.5.0"]
+ecs_version = ["1.6.0"]
 maturity = "production"
-updated_date = "2020/03/25"
+updated_date = "2020/08/03"
 
 [rule]
 author = ["Elastic"]
@@ -16,7 +16,8 @@ false_positives = [
     triggers this rule it can be exempted by process, user or host name.
     """,
 ]
-index = ["winlogbeat-*"]
+from = "now-9m"
+index = ["winlogbeat-*", "logs-endpoint.events.*"]
 language = "kuery"
 license = "Elastic License"
 name = "Microsoft Build Engine Started an Unusual Process"
@@ -28,7 +29,8 @@ tags = ["Elastic", "Windows"]
 type = "query"
 
 query = '''
-process.parent.name:MSBuild.exe and process.name:(csc.exe or iexplore.exe or powershell.exe)
+event.category:process and event.type:(start or process_started) and
+  process.parent.name:MSBuild.exe and process.name:(csc.exe or iexplore.exe or powershell.exe)
 '''
 
 

@@ -1,8 +1,8 @@
 [metadata]
 creation_date = "2020/04/21"
-ecs_version = ["1.4.0"]
+ecs_version = ["1.6.0"]
 maturity = "production"
-updated_date = "2020/04/21"
+updated_date = "2020/08/03"
 
 [rule]
 author = ["Elastic"]
@@ -16,7 +16,8 @@ false_positives = [
     by username.
     """,
 ]
-index = ["auditbeat-*"]
+from = "now-9m"
+index = ["auditbeat-*", "logs-endpoint.events.*"]
 language = "kuery"
 license = "Elastic License"
 name = "File Permission Modification in Writable Directory"
@@ -27,7 +28,10 @@ tags = ["Elastic", "Linux"]
 type = "query"
 
 query = '''
-event.action:executed and process.name:(chmod or chown or chattr or chgrp) and process.working_directory:(/tmp or /var/tmp or /dev/shm) and not user.name:root
+event.category:process and event.type:(start or process_started) and
+  process.name:(chmod or chown or chattr or chgrp) and
+  process.working_directory:(/tmp or /var/tmp or /dev/shm) and
+  not user.name:root
 '''
 
 

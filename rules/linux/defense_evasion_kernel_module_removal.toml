@@ -1,8 +1,8 @@
 [metadata]
 creation_date = "2020/04/24"
-ecs_version = ["1.4.0"]
+ecs_version = ["1.6.0"]
 maturity = "production"
-updated_date = "2020/04/24"
+updated_date = "2020/08/03"
 
 [rule]
 author = ["Elastic"]
@@ -17,7 +17,8 @@ false_positives = [
     Note that some Linux distributions are not built to support the removal of modules at all.
     """,
 ]
-index = ["auditbeat-*"]
+from = "now-9m"
+index = ["auditbeat-*", "logs-endpoint.events.*"]
 language = "kuery"
 license = "Elastic License"
 name = "Kernel Module Removal"
@@ -29,7 +30,8 @@ tags = ["Elastic", "Linux"]
 type = "query"
 
 query = '''
-event.action:executed and process.args:(rmmod and sudo or modprobe and sudo and ("--remove" or "-r"))
+event.category:process and event.type:(start or process_started) and
+  process.args:((rmmod and sudo) or (modprobe and sudo and ("--remove" or "-r")))
 '''
 
 
